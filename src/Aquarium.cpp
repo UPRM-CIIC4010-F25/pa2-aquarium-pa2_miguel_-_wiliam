@@ -1,5 +1,6 @@
 #include "Aquarium.h"
 #include <cstdlib>
+#include <cmath>
 
 
 string AquariumCreatureTypeToString(AquariumCreatureType t){
@@ -69,6 +70,36 @@ void PlayerCreature::loseLife(int debounce) {
     if (m_damage_debounce > 0) {
         ofLogVerbose() << "Player is in damage debounce period. Frames left: " << m_damage_debounce << std::endl;
     }
+}
+
+void PlayerCreature::bounce(){
+    if(m_width <= 0 || m_height <= 0) return;
+    
+    const float radius = max(1.0f,m_collisionRadius);
+    bool hitX = false;
+    bool hitY = false;
+
+    if (m_y - radius < 0.0f) { //pared arriba
+        m_y = radius;
+        hitY = true;
+    }
+    if (m_y + radius > m_height) { ///pared abajo
+        m_y = m_height - radius;
+        hitY = true;
+    }
+
+    if(m_x - radius < 0.0f){ //pared izquierdo
+        m_x = radius;
+        hitX = true;
+    }
+
+    if(m_x + radius > m_width){/// pared derecha
+        m_x =m_width - radius;
+        hitX = true;
+    }
+
+    if (hitX) { m_dx = 0.0f; }
+    if (hitY) { m_dy = 0.0f; }
 }
 
 // NPCreature Implementation
@@ -161,6 +192,7 @@ Aquarium::Aquarium(int width, int height, std::shared_ptr<AquariumSpriteManager>
 
 void Aquarium::addCreature(std::shared_ptr<Creature> creature) {
     creature->setBounds(m_width - 20, m_height - 20);
+    creature->keepInsideFish(8.0f);
     m_creatures.push_back(creature);
 }
 

@@ -99,7 +99,9 @@ public:
 
     void setBounds(int w, int h);
     void normalize();
-    void bounce();
+    virtual void bounce();
+
+    void keepInsideFish(float space = 0.0f );
 };
 
 // GameEvents

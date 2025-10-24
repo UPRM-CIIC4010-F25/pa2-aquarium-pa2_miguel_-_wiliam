@@ -1,5 +1,5 @@
 #include "Core.h"
-
+using namespace std;
 
 // Creature Inherited Base Behavior
 void Creature::setBounds(int w, int h) { m_width = w; m_height = h; }
@@ -12,9 +12,66 @@ void Creature::normalize() {
 }
 
 void Creature::bounce() {
-    // should implement boundary controls here
+    if(m_width <= 0 || m_height <= 0) return;
+    
+    const float radius = max(1.0f,m_collisionRadius);
+    bool hitX = false;
+    bool hitY = false;
+
+    if (m_y - radius < 0.0f) { //pared arriba
+        m_y = radius;
+        hitY = true;
+    }
+    if (m_y + radius > m_height) { ///pared abajo
+        m_y = m_height - radius;
+        hitY = true;
+    }
+
+    if(m_x - radius < 0.0f){ //pared izquierdo
+        m_x = radius;
+        hitX = true;
+    }
+
+    if(m_x + radius > m_width){/// pared derecha
+        m_x =m_width - radius;
+        hitX = true;
+    }
+
+    if (hitX) m_dx = -m_dx;
+    if (hitY) m_dy = -m_dy;
+
+    if(hitX || hitY){
+        const float pushBack = 1e-4f;
+        if(fabs(m_dx) < pushBack) m_dx = (m_x < m_width * 0.5f ? 1.0f : -1.0f);
+        if(fabs(m_dy) < pushBack) m_dy = (m_y < m_height * 0.5f ? 1.0f : -1.0f);
+        normalize();
+    }
+
+
+
+
 }
 
+void Creature::keepInsideFish(float space) {
+    if(m_width <= 0 || m_height <= 0) return;
+
+    const float actualSpace = max(m_collisionRadius,space);
+
+    if(m_x < actualSpace) {
+        m_x = actualSpace;
+    }
+    if(m_y < actualSpace) {
+        m_y = actualSpace;
+    }
+    if(m_x > m_width - actualSpace) {
+        m_x = m_width - actualSpace;
+    }
+    if(m_y > m_height - actualSpace) {
+        m_y = m_height - actualSpace;
+    }
+
+
+}
 
 void GameEvent::print() const {
         

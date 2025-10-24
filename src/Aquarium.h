@@ -67,7 +67,8 @@ public:
     void loseLife(int debounce);
     void increasePower(int value) { m_power += value; }
     void reduceDamageDebounce();
-    
+    void bounce() override;
+
 private:
     int m_score = 0;
     int m_lives = 3;

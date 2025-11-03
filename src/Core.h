@@ -102,6 +102,9 @@ public:
     virtual void bounce();
 
     void keepInsideFish(float space = 0.0f );
+
+    void moveLittle(float dx, float dy);
+    
 };
 
 // GameEvents

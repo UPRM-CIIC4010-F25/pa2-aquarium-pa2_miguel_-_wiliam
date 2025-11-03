@@ -205,6 +205,46 @@ void Aquarium::update() {
     for (auto& creature : m_creatures) {
         creature->move();
     }
+    auto circleCollisionFish = [](std::shared_ptr<Creature> a, std::shared_ptr<Creature> b){
+    if (!a || !b){
+        return;
+    }
+    float dx = b->getX() - a->getX();
+    float dy = b->getY() - a->getY();
+
+    float sumOfRadius = a->getCollisionRadius() + b->getCollisionRadius();
+
+    float actualDistance = dx*dx + dy*dy;
+
+    float rXr = sumOfRadius * sumOfRadius;
+    
+
+    if(actualDistance >= rXr){
+        return;
+    }
+
+    if (actualDistance == 0.0f){
+        const float pushBack = sumOfRadius * 0.5f;
+        a->moveLittle(-pushBack,0.0f);
+        b->moveLittle(pushBack,0.0f);
+        return;
+    }
+
+    float trueDistance = sqrt(actualDistance);
+    float actualCollision = (sumOfRadius - trueDistance) * 0.5f;
+    float nx = dx/trueDistance;
+    float ny = dy/trueDistance;
+    
+
+    a->moveLittle(-nx * actualCollision, -ny * actualCollision);
+    b->moveLittle(nx * actualCollision, ny * actualCollision);
+};
+    const size_t n = m_creatures.size();
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = i + 1; j < n; ++j) {
+            circleCollisionFish(m_creatures[i], m_creatures[j]);
+        }
+    }
     this->Repopulate();
 }
 

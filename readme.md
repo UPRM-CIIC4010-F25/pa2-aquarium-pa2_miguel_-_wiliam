@@ -24,7 +24,7 @@ Grading
 ## Team Info
 | Student Number | Student Name | Student Email |
 |-|-|-|
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
+|(802-24-7547)| (William Rosado Piñeiro)| (william.rosado8@upr.edu) |
 |(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
 
 ---

@@ -9,6 +9,8 @@ string AquariumCreatureTypeToString(AquariumCreatureType t){
             return "BiggerFish";
         case AquariumCreatureType::NPCreature:
             return "BaseFish";
+        case AquariumCreatureType::FastFish:
+            return "FastFish";
         default:
             return "UknownFish";
     }
@@ -75,7 +77,7 @@ void PlayerCreature::loseLife(int debounce) {
 void PlayerCreature::bounce(){
     if(m_width <= 0 || m_height <= 0) return;
     
-    const float radius = max(1.0f,m_collisionRadius);
+    const float radius = std::max(1.0f,m_collisionRadius);
     bool hitX = false;
     bool hitY = false;
 
@@ -163,10 +165,50 @@ void BiggerFish::draw() const {
 }
 
 
+FastFish::FastFish(float x, float y, int speed, std::shared_ptr<GameSprite> sprite)
+: NPCreature(x, y, speed, sprite) {
+    setCollisionRadius(20);
+    m_value = 3;
+    m_creatureType = AquariumCreatureType::FastFish;
+
+    m_dx = (rand() % 3 - 1);
+    m_dy = (rand() % 3 - 1);
+    normalize();
+
+}
+
+void FastFish::move(){
+    m_x += m_dx * (m_speed * 3.0f);
+    m_y += m_dy * (m_speed * 3.0f);
+
+    if(m_dx < 0){
+        m_sprite->setFlipped(true);
+    }
+    else{
+        m_sprite->setFlipped(false);
+    }
+
+    bounce();
+
+}
+
+void FastFish::draw() const {
+    ofLogVerbose()<< "FastFish at (" << m_x << ", " << m_y << ") with speed " << m_speed << std::endl;
+    if (m_sprite) {
+        m_sprite->draw(m_x, m_y);
+    }
+}
+
+
+
+
+
 // AquariumSpriteManager
 AquariumSpriteManager::AquariumSpriteManager(){
     this->m_npc_fish = std::make_shared<GameSprite>("base-fish.png", 70,70);
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
+    this->m_fast_fish = std::make_shared<GameSprite>("fast-fish.png", 70,70);
+
 }
 
 std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureType t){
@@ -176,6 +218,9 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
             
         case AquariumCreatureType::NPCreature:
             return std::make_shared<GameSprite>(*this->m_npc_fish);
+
+        case AquariumCreatureType::FastFish:
+            return std::make_shared<GameSprite>(*this->m_fast_fish);
         default:
             return nullptr;
     }
@@ -290,6 +335,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
             break;
         case AquariumCreatureType::BiggerFish:
             this->addCreature(std::make_shared<BiggerFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::BiggerFish)));
+            break;
+        case AquariumCreatureType::FastFish:
+            this->addCreature(std::make_shared<FastFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::FastFish)));
             break;
         default:
             ofLogError() << "Unknown creature type to spawn!";
@@ -466,6 +514,34 @@ std::vector<AquariumCreatureType> Level_1::Repopulate() {
 }
 
 std::vector<AquariumCreatureType> Level_2::Repopulate() {
+    std::vector<AquariumCreatureType> toRepopulate;
+    for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
+        int delta = node->population - node->currentPopulation;
+        if(delta >0){
+            for(int i=0; i<delta; i++){
+                toRepopulate.push_back(node->creatureType);
+            }
+            node->currentPopulation += delta;
+        }
+    }
+    return toRepopulate;
+}
+
+std::vector<AquariumCreatureType> Level_3::Repopulate() {
+    std::vector<AquariumCreatureType> toRepopulate;
+    for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
+        int delta = node->population - node->currentPopulation;
+        if(delta >0){
+            for(int i=0; i<delta; i++){
+                toRepopulate.push_back(node->creatureType);
+            }
+            node->currentPopulation += delta;
+        }
+    }
+    return toRepopulate;
+}
+
+std::vector<AquariumCreatureType> Level_4::Repopulate() {
     std::vector<AquariumCreatureType> toRepopulate;
     for(std::shared_ptr<AquariumLevelPopulationNode> node : this->m_levelPopulation){
         int delta = node->population - node->currentPopulation;

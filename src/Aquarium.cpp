@@ -13,6 +13,8 @@ string AquariumCreatureTypeToString(AquariumCreatureType t){
             return "FastFish";
         case AquariumCreatureType::SchoolFish:
             return "SchoolFish";
+        case AquariumCreatureType::PowerUp:
+            return "PowerUp";
         default:
             return "UknownFish";
     }
@@ -243,6 +245,7 @@ AquariumSpriteManager::AquariumSpriteManager(){
     this->m_big_fish = std::make_shared<GameSprite>("bigger-fish.png", 120, 120);
     this->m_fast_fish = std::make_shared<GameSprite>("fast-fish.png", 70,70);
     this->m_school_fish = std::make_shared<GameSprite>("school-fish.png", 85,85);
+    this->m_power_up = std::make_shared<GameSprite>("power_up.png", 64, 64);
 
 
 }
@@ -259,6 +262,8 @@ std::shared_ptr<GameSprite> AquariumSpriteManager::GetSprite(AquariumCreatureTyp
             return std::make_shared<GameSprite>(*this->m_fast_fish);
         case AquariumCreatureType::SchoolFish:
             return std::make_shared<GameSprite>(*this->m_school_fish);
+        case AquariumCreatureType::PowerUp:
+            return std::make_shared<GameSprite>(*this->m_power_up);
         default:
             return nullptr;
     }
@@ -380,6 +385,9 @@ void Aquarium::SpawnCreature(AquariumCreatureType type) {
         case AquariumCreatureType::SchoolFish:
             this->addCreature(std::make_shared<SchoolFish>(x, y, speed, this->m_sprite_manager->GetSprite(AquariumCreatureType::SchoolFish)));
             break;
+        case AquariumCreatureType::PowerUp:
+            this->addCreature(std::make_shared<PowerUp>(x,y,this->m_sprite_manager->GetSprite(AquariumCreatureType::PowerUp)));
+            break;
         default:
             ofLogError() << "Unknown creature type to spawn!";
             break;
@@ -445,7 +453,16 @@ void AquariumGameScene::Update(){
         if (event != nullptr && event->isCollisionEvent()) {
             ofLogVerbose() << "Collision detected between player and NPC!" << std::endl;
             if(event->creatureB != nullptr){
-                event->print();
+                
+                if(std::dynamic_pointer_cast<PowerUp>(event->creatureB)){
+                    ofLogNotice()<< "power up Collected!"<<std::endl;
+                    this->m_player->changeSpeed(this->m_player->getSpeed()+2);
+                    this->m_aquarium->removeCreature(event->creatureB);
+                    this->m_player->increasePower(1);
+                    int newLives= std::min(this->m_player->getLives()+1, 5);
+                    this->m_player->setLives(newLives);
+                    return;
+                }event->print();
                 if(this->m_player->getPower() < event->creatureB->getValue()){
                     ofLogNotice() << "Player is too weak to eat the creature!" << std::endl;
                     this->m_player->loseLife(3*60); // 3 frames debounce, 3 seconds at 60fps
@@ -470,7 +487,17 @@ void AquariumGameScene::Update(){
                 ofLogError() << "Error: creatureB is null in collision event." << std::endl;
             }
         }
-        this->m_aquarium->update();
+         this->m_aquarium->update();
+
+        int score = this->m_player->getScore();
+        int prevGroup = this->m_lastPowerupScore /10;
+        int currentGroup = score /10;
+        if(score!= 0 && currentGroup > prevGroup){
+            ofLogNotice()<< "Power up Spawned!";
+            this->m_aquarium->SpawnCreature(AquariumCreatureType::PowerUp);
+            this->m_lastPowerupScore = score;
+
+        }
     }
 
 }

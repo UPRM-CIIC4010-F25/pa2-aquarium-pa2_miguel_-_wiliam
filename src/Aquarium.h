@@ -11,7 +11,8 @@ enum class AquariumCreatureType {
     NPCreature,
     BiggerFish,
     FastFish,
-    SchoolFish
+    SchoolFish, 
+    PowerUp
 };
 
 string AquariumCreatureTypeToString(AquariumCreatureType t);
@@ -122,6 +123,7 @@ class AquariumSpriteManager {
         std::shared_ptr<GameSprite> m_big_fish;
         std::shared_ptr<GameSprite> m_fast_fish;
         std::shared_ptr<GameSprite> m_school_fish;
+        std::shared_ptr<GameSprite> m_power_up;
 
 };
 
@@ -179,6 +181,7 @@ class AquariumGameScene : public GameScene {
         std::shared_ptr<GameEvent> m_lastEvent;
         string m_name;
         AwaitFrames updateControl{5};
+        int m_lastPowerupScore =0;
 };
 
 
@@ -238,4 +241,25 @@ class Level_4 : public AquariumLevel  {
         };
         std::vector<AquariumCreatureType> Repopulate() override;
 
+};
+
+class PowerUp : public NPCreature {
+    public:
+        PowerUp(float x, float y, std::shared_ptr<GameSprite> sprite)
+            :NPCreature(x, y, 0, sprite){
+                m_creatureType = AquariumCreatureType::PowerUp;
+                m_value = 0;
+                m_collisionRadius = 32;
+            }
+            void move() override {
+                m_y -= 0.5f;
+                bounce();
+            }
+            void draw() const override {
+                ofSetColor(ofColor::yellow);
+                if(m_sprite){
+                    m_sprite->draw(m_x, m_y);
+                }
+                ofSetColor(ofColor::white);
+            }
 };

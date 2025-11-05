@@ -25,7 +25,7 @@ Grading
 | Student Number | Student Name | Student Email |
 |-|-|-|
 |(802-24-7547)| (William Rosado Piñeiro)| (william.rosado8@upr.edu) |
-|(STUDENT NUMBER HERE)| (STUDENT NAME HERE)| (STUDENT EMAIL HERE) |
+|( 802-24-4170)| (Miguel Vega Correa)| (miguel.vega18@upr.edu) |
 
 ---
 

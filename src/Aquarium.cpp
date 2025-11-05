@@ -301,9 +301,9 @@ void Aquarium::update() {
     float dy = b->getY() - a->getY();
 
     float sumOfRadius = a->getCollisionRadius() + b->getCollisionRadius();
-
-    float actualDistance = dx*dx + dy*dy;
-
+    float DXBI = dx*dx;
+    float DYBI = dy*dy;
+    float actualDistance = DXBI + DYBI;
     float rXr = sumOfRadius * sumOfRadius;
     
 

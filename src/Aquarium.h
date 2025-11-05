@@ -166,7 +166,7 @@ std::shared_ptr<GameEvent> DetectAquariumCollisions(std::shared_ptr<Aquarium> aq
 class AquariumGameScene : public GameScene {
     public:
         AquariumGameScene(std::shared_ptr<PlayerCreature> player, std::shared_ptr<Aquarium> aquarium, string name)
-        : m_player(std::move(player)) , m_aquarium(std::move(aquarium)), m_name(name){}
+        : m_player(std::move(player)) , m_aquarium(std::move(aquarium)), m_name(name){playBackgroundMusic("sounds/underwater_ambience.mp3", true, 0.5f);}
         std::shared_ptr<GameEvent> GetLastEvent(){return m_lastEvent;}
         void SetLastEvent(std::shared_ptr<GameEvent> event){this->m_lastEvent = event;}
         std::shared_ptr<PlayerCreature> GetPlayer(){return this->m_player;}
@@ -174,6 +174,8 @@ class AquariumGameScene : public GameScene {
         string GetName()override {return this->m_name;}
         void Update() override;
         void Draw() override;
+        void playBackgroundMusic(const std::string &path, bool loop =true, float volume=0.5f);
+        void stopBackgroundMusic();
     private:
         void paintAquariumHUD();
         std::shared_ptr<PlayerCreature> m_player;
@@ -182,6 +184,9 @@ class AquariumGameScene : public GameScene {
         string m_name;
         AwaitFrames updateControl{5};
         int m_lastPowerupScore =0;
+        ofSoundPlayer m_bgMusic;
+        bool m_musicPlaying=false;
+        float m_musicVolume=0.5f;
 };
 
 

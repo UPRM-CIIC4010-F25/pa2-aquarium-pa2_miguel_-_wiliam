@@ -442,6 +442,22 @@ std::shared_ptr<GameEvent> DetectAquariumCollisions(std::shared_ptr<Aquarium> aq
 };
 
 //  Imlementation of the AquariumScene
+void AquariumGameScene::playBackgroundMusic(const std::string &path, bool loop, float volume){
+    if(m_musicPlaying)return; 
+
+    m_bgMusic.setLoop(loop);
+    m_bgMusic.setMultiPlay(false);
+    m_bgMusic.setVolume(volume);
+    m_bgMusic.play();
+    m_musicPlaying = true;
+    m_musicVolume = volume;
+}
+void AquariumGameScene::stopBackgroundMusic(){
+    if(!m_musicPlaying) return;
+
+    m_bgMusic.stop();
+    m_musicPlaying = false;
+}
 
 void AquariumGameScene::Update(){
     std::shared_ptr<GameEvent> event;

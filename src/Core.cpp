@@ -41,7 +41,7 @@ void Creature::bounce() {
     if (hitY) m_dy = -m_dy;
 
     if(hitX || hitY){
-        const float pushBack = 1e-4f;
+        const float pushBack = 0.0001f;
         if(fabs(m_dx) < pushBack) m_dx = (m_x < m_width * 0.5f ? 1.0f : -1.0f);
         if(fabs(m_dy) < pushBack) m_dy = (m_y < m_height * 0.5f ? 1.0f : -1.0f);
         normalize();
